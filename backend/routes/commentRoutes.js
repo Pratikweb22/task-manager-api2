@@ -9,20 +9,19 @@ const {
   deleteComment,
 } = require("../controllers/commentController");
 
-// Import authentication middleware
-const authMiddleware = require("../middleware/authMiddlewares");
+const auth = require("../middleware/authMiddlewares"); 
 
 
 // Add a comment to a task
-router.post("/add", authMiddleware, addComment);
+router.post("/add", auth, addComment);
 
 // Get all comments for a task
-router.get("/task/:taskId", authMiddleware, getCommentsByTask);
+router.get("/task/:taskId", auth, getCommentsByTask);
 
 // Update a comment
-router.put("/:commentId", authMiddleware, updateComment);
+router.put("/:commentId", auth, updateComment);
 
 // Delete a comment
-router.delete("/:commentId", authMiddleware, deleteComment);
+router.delete("/:commentId", auth, deleteComment);
 
 module.exports = router;

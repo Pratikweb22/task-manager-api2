@@ -33,7 +33,7 @@ const Comment = sequelize.define("Comment", {
   }
 }, {
   tableName: "comments",
-  timestamps: true // adds createdAt and updatedAt
+  timestamps: true 
 });
 
 module.exports = Comment;

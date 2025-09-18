@@ -15,13 +15,17 @@ class CommentService {
       text,
     });
 
-     await logActivity({
-  userId,
-  taskId,
-  commentId: comment.id,
-  action: "COMMENT_ADDED",
-  message: `User (id:${userId}) added a comment on task "${task.title}": "${text}"`,
-});
+    try {
+      await logActivity({
+        userId,
+        taskId,
+        commentId: comment.id,
+        action: "COMMENT_ADDED",
+        message: `User (id:${userId}) added a comment on task "${task.title}": "${text}"`,
+      });
+    } catch (error) {
+      console.error("Error adding comment log activity:", error);
+    }
     return comment;
   }
 
@@ -57,13 +61,18 @@ class CommentService {
 
     await comment.destroy();
 
-    await logActivity({
+    try {
+        await logActivity({
   userId: currentUser.id,
   taskId: comment.taskId,
   commentId: comment.id,
   action: "COMMENT_DELETED",
   message: `${currentUser.name} (id:${currentUser.id}) deleted a comment on task "${comment.task.title}"`,
 });
+    } catch (error) {
+      console.error("Error deleting comment log activity:", error);
+    }
+
     return true;
   }
 
@@ -81,13 +90,18 @@ class CommentService {
     comment.text = text || comment.text;
     await comment.save();
 
-   await logActivity({
+    try {
+      await logActivity({
   userId: currentUser.id,
   taskId: comment.taskId,
   commentId: comment.id,
   action: "COMMENT_UPDATED",
   message: `${currentUser.name} (id:${currentUser.id}) updated a comment on task "${comment.task.title}"`,
 });
+      
+    } catch (error) {
+      console.error("Error updating comment log activity:", error);
+    }
 
     return comment;
   }

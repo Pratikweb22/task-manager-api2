@@ -1,5 +1,5 @@
 const { DataTypes } = require("sequelize");
-const sequelize = require("../config/db"); // your sequelize instance
+const sequelize = require("../config/db");
 const Task = require("./taskModel");
 
 const Attachment = sequelize.define("Attachment", {

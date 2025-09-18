@@ -9,8 +9,8 @@ const ActivityLog = sequelize.define(
     userId: { type: DataTypes.INTEGER, allowNull: false },
     taskId: { type: DataTypes.INTEGER, allowNull: true },
     commentId: { type: DataTypes.INTEGER, allowNull: true }, 
-    action: { type: DataTypes.STRING, allowNull: false }, // e.g. TASK_ADDED, COMMENT_UPDATED
-    message: { type: DataTypes.TEXT, allowNull: false }, // readable message
+    action: { type: DataTypes.STRING, allowNull: false }, 
+    message: { type: DataTypes.TEXT, allowNull: false }, 
   },
   {
     timestamps: true,

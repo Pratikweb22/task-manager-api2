@@ -15,7 +15,7 @@ const addComment = async (req, res) => {
     res.status(201).json({ success: true, message: "Comment added", data: comment });
   } catch (err) {
     console.error("Error in addComment:", err);
-    res.status(500).json({ success: false, message: "Internal Server Error" });
+    res.status(500).json({ success: false, message: "error in addComment" });
   }
 };
 
@@ -26,7 +26,7 @@ const getCommentsByTask = async (req, res) => {
     res.json({ success: true, data: comments });
   } catch (err) {
     console.error("Error in getCommentsByTask:", err);
-    res.status(500).json({ success: false, message: "Internal Server Error" });
+    res.status(500).json({ success: false, message: "error in getCommentsByTask" });
   }
 };
 
@@ -37,7 +37,7 @@ const deleteComment = async (req, res) => {
     res.json({ success: true, message: "Comment deleted" });
   } catch (err) {
     console.error("Error in deleteComment:", err);
-    res.status(500).json({ success: false, message: "Internal Server Error" });
+    res.status(500).json({ success: false, message: "error in deleteComment" });
   }
 };
 
@@ -53,7 +53,7 @@ const updateComment = async (req, res) => {
     res.json({ success: true, message: "Comment updated", data: updatedComment });
   } catch (err) {
     console.error("Error in updateComment:", err);
-    res.status(500).json({ success: false, message: "Internal Server Error" });
+    res.status(500).json({ success: false, message: "error in updateComment" });
   }
 };
 

@@ -37,7 +37,6 @@ module.exports = {
         allowNull: true,
         defaultValue: "Software Intern"
       }
-      // Note: timestamps are false, so no createdAt/updatedAt
     });
   },
 

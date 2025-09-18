@@ -18,7 +18,7 @@ const auth = (req, res, next) => {
 
     // Attach user data to req.user
     req.user = {
-      id: verifiedToken.id,     // make sure you used `id` while signing token
+      id: verifiedToken.id,     
       role: verifiedToken.role,
       email: verifiedToken.email,
     };

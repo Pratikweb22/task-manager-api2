@@ -1,4 +1,4 @@
-// utils/logActivity.js
+
 const ActivityLog = require("../models/activitylog");
 
 async function logActivity({ userId, taskId = null, commentId = null, action, message }) {
@@ -11,7 +11,6 @@ async function logActivity({ userId, taskId = null, commentId = null, action, me
       message,
     });
   } catch (err) {
-    // never throw from logger; just print so it won't break main flow
     console.error("ActivityLog Error:", err);
   }
 }

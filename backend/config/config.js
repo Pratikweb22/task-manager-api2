@@ -1,4 +1,4 @@
-require('dotenv').config(); // load variables from .env
+require('dotenv').config(); 
 
 module.exports = {
   development: {
@@ -7,6 +7,6 @@ module.exports = {
     database: process.env.DB_DATABASE,
     host: process.env.DB_HOST,
     dialect: process.env.DB_DIALECT,
-    logging: true // set to console.log to see SQL queries
+    logging: true 
   }
 };

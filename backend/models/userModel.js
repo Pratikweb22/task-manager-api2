@@ -21,7 +21,7 @@ const User = sequelize.define("User", {
     allowNull: false
   },
   role: { 
-    type: DataTypes.ENUM("user", "admin"), // only allow these two values
+    type: DataTypes.ENUM("user", "admin"), 
     allowNull: false, 
     defaultValue: "user" 
   },

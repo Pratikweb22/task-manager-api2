@@ -1,8 +1,4 @@
-const transporter = require("../config/mail");
-const path = require("path");
-const upload = require("../config/multer");
-const { User, Task, Comment, TaskAssignee, Attachment } = require("../models");
-const { Op } = require("sequelize");
+
 const TaskService = require("../service/taskService");
 // ✅ Add Task
 const addTask = async (req, res) => {
@@ -27,7 +23,7 @@ const updateTask = async (req, res) => {
     res.json({ success: true, message: "Task updated successfully", data: task });
   } catch (err) {
     console.error("Error in updateTask:", err);
-    res.status(500).json({ success: false, message: "Internal Server Error" });
+    res.status(500).json({ success: false, message: "error in updateTask" });
   }
 };
 
@@ -50,7 +46,7 @@ const getAllTasks = async (req, res) => {
     res.json({ success: true, data: tasks });
   } catch (err) {
     console.error("Error in getAllTasks:", err);
-    res.status(500).json({ success: false, message: "Internal Server Error" });
+    res.status(500).json({ success: false, message: "error in getAllTasks" });
   }
 };
 
@@ -62,7 +58,7 @@ const getTasksByStatusForUser = async (req, res) => {
     res.status(200).json({ success: true, message: tasks });
   } catch (err) {
     console.error("Error in getTasksByStatusForUser:", err);
-    res.status(500).json({ success: false, message: "Internal Server Error" });
+    res.status(500).json({ success: false, message: "error in getTasksByStatusForUser" });
   }
 };
 
@@ -74,7 +70,7 @@ const getTasksByAssignee = async (req, res) => {
         res.json({ success: true, message: tasks });
     } catch (err) {
         console.error("Error in getTasksByAssignee:", err);
-        res.status(500).json({ success: false, message: "Internal Server Error" });
+        res.status(500).json({ success: false, message: "error in getTasksByAssignee" });
     }
 };
 
@@ -89,7 +85,7 @@ const getAllTasksByUser = async (req, res) => {
     });
   } catch (err) {
     console.error("Error in getAllTasksByUser:", err);
-    res.status(500).json({ success: false, message: "Internal Server Error" });
+    res.status(500).json({ success: false, message: "error in getAllTasksByUser" });
   }
 };
 module.exports = {

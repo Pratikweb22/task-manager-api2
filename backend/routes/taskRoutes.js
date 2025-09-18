@@ -17,7 +17,6 @@ router.post(
 );
 
 //  Update a task
-// Accept multiple files (optional)
 router.put(
   "/update/:id",
   auth,

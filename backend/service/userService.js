@@ -5,6 +5,12 @@ const User = require("../models/userModel");
 class UserService {
   // ---------------- Register ----------------
   static async registerUser({ name, email, password, role, designation }) {
+
+     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    throw new Error("Invalid email format");
+  }
+  
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
       throw new Error("User already exists");
@@ -37,6 +43,8 @@ class UserService {
     }
 
    
+     const isMatch = await bcrypt.compare(password, user.password);
+     if (!isMatch) throw new Error("Invalid credentials");
 
     const token = jwt.sign(
       { id: user.id, email: user.email, role: user.role },
@@ -67,6 +75,19 @@ class UserService {
     await user.destroy();
     return true;
   }
+
+  // ---------------- Get All Users (Admin only) ----------------
+static async getAllUsers() {
+    try {
+      const users = await User.findAll({
+        attributes: ["id", "name", "email", "role", "designation"],
+      });
+      return users;
+    } catch (error) {
+      throw new Error("Database error while fetching users");
+    }
+  }
 }
+
 
 module.exports = UserService;

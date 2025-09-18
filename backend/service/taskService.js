@@ -84,12 +84,17 @@ class TaskService {
       ],
     });
    // 🔹 Log activity (task created)
-    await logActivity({
+    try{
+        await logActivity({
   userId: currentUser.id,
   taskId: taskWithAssignees.id,
   action: "TASK_ADDED",
   message: `${currentUser?.name || "User"} (id:${currentUser.id}) created task "${taskWithAssignees.title}".`,
 });
+    }
+    catch(err){
+      console.error("Logging activity in create task failed:", err);
+    }
 
 
     // Send email notifications
@@ -99,18 +104,18 @@ class TaskService {
         to: user.email,
         subject: `New Task Assigned: ${title}`,
         text: `
-Hello ${user.name},
+          Hello ${user.name},
 
-You have been assigned a new task.
+           You have been assigned a new task.
 
-Title: ${title}
-Description: ${description}
-Due Date: ${dueDate}
-Status: ${status || "pending"}
+           Title: ${title}
+           Description: ${description}
+           Due Date: ${dueDate}
+           Status: ${status || "pending"}
 
-Please check your dashboard for more details.
-        `,
-      };
+           Please check your dashboard for more details.
+          `,
+          };
       transporter.sendMail(mailOptions, (err) => {
         if (err) console.error("Email error:", err);
       });
@@ -150,24 +155,20 @@ Please check your dashboard for more details.
       }
       assignees = assignees.map(id => Number(id)).filter(Boolean);
       await task.setAssignees(assignees);
-
-      for (const assigneeId of assignees) {
-        await logActivity({
-          userId: currentUser.id,
-          taskId: task.id,
-          action: "TASK_ASSIGNED",
-          message: `${currentUser.name} (id:${currentUser.id}) reassigned task "${task.title}" to userId ${assigneeId}.`,
-        });
-      }
     }
 
     // 🔹 Log activity (task updated)
-    await logActivity({
+    try{
+      await logActivity({
   userId: currentUser.id,
   taskId: task.id,
   action: "TASK_UPDATED",
   message: `${currentUser?.name || "User"} (id:${currentUser.id}) updated task "${task.title}".`,
 });
+    }
+    catch(err){
+      console.error("Logging activity in update task failed:", err);
+    }
 
     return task;
   }
@@ -184,59 +185,60 @@ Please check your dashboard for more details.
     const title = task.title;
     await task.destroy();
     // 🔹 Log activity (task deleted)
-   await logActivity({
-  userId: currentUser.id,
-  taskId: task.id,
-  action: "TASK_DELETED",
-  message: `${currentUser?.name || "User"} (id:${currentUser.id}) deleted task "${title}".`,
-});
+   try{
+      await logActivity({
+        userId: currentUser.id,
+        taskId: task.id,
+        action: "TASK_DELETED",
+        message: `${currentUser?.name || "User"} (id:${currentUser.id}) deleted task "${title}".`,
+      });
+    }catch(err){
+      console.error("Logging activity in delete task failed:", err);
+    }
+
     return { message: "Task deleted successfully" };
   }
 
   // ------------------- Get All Tasks -------------------
-  static async getAllTasks(currentUser) {
-    let tasks;
+static async getAllTasks(currentUser) {
+  let tasks;
 
-    if (currentUser.role === "admin") {
-      // Admin can see all tasks
-      tasks = await Task.findAll({
-        include: [
-          { model: User, as: "creator", attributes: ["id", "name", "email"] },
-          { model: User, as: "assignees", attributes: ["id", "name", "email"] },
-          { model: Attachment, as: "attachments", attributes: ["id", "filename", "filepath"] },
+  if (currentUser.role === "admin") {
+    // Admin: fetch all tasks
+    tasks = await Task.findAll({
+      include: [
+        { model: User, as: "creator", attributes: ["id", "name", "email"] },
+        { model: User, as: "assignees", attributes: ["id", "name", "email"] },
+        { model: Attachment, as: "attachments", attributes: ["id", "filename", "filepath"] },
+      ],
+      order: [["createdAt", "DESC"]],
+    });
+  } else {
+    tasks = await Task.findAll({
+      include: [
+        { model: User, as: "creator", attributes: ["id", "name", "email"] },
+        {
+          model: User,
+          as: "assignees",
+          attributes: ["id", "name", "email"],
+          required: false, // include tasks even if user is not assigned
+        },
+        { model: Attachment, as: "attachments", attributes: ["id", "filename", "filepath"] },
+      ],
+      where: {
+        [Op.or]: [
+          { userId: currentUser.id },            
+          { "$assignees.id$": currentUser.id }, 
         ],
-      });
-    } else {
-      // Normal user: see tasks they created OR tasks assigned to them
-      tasks = await Task.findAll({
-        include: [
-          { model: User, as: "creator", attributes: ["id", "name", "email"] },
-          { model: User, as: "assignees", attributes: ["id", "name", "email"] },
-          { model: Attachment, as: "attachments", attributes: ["id", "filename", "filepath"] },
-        ],
-        where: { [Op.or]: [{ userId: currentUser.id }] },
-      });
-
-      // Also tasks where user is an assignee
-      const assignedTasks = await Task.findAll({
-        include: [
-          { model: User, as: "creator", attributes: ["id", "name", "email"] },
-          { model: User, as: "assignees", attributes: ["id", "name", "email"] },
-          { model: Attachment, as: "attachments", attributes: ["id", "filename", "filepath"] },
-        ],
-      });
-
-      const extra = assignedTasks.filter(task =>
-        task.assignees.some(a => a.id === currentUser.id)
-      );
-
-      tasks = [...tasks, ...extra].filter(
-        (t, index, self) => index === self.findIndex(obj => obj.id === t.id)
-      );
-    }
-
-    return tasks;
+      },
+      distinct: true,
+      order: [["createdAt", "DESC"]],
+    });
   }
+
+  return tasks;
+}
+
 
   // ------------------- Get Tasks by Status (for User) -------------------
   static async getTasksByStatusForUser(status, currentUser) {

@@ -73,4 +73,24 @@ const deleteUser = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser, getCurrentUser, deleteUser };
+const getAllUsers = async (req, res) => {
+  try {
+    // Only admin can access all users
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ success: false, message: "Access denied" });
+    }
+
+    const users = await UserService.getAllUsers();
+
+    return res.status(200).json({
+      success: true,
+      message: "Users fetched successfully",
+      data: users
+    });
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+module.exports = { registerUser, loginUser, getCurrentUser, deleteUser, getAllUsers };
